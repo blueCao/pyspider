@@ -27,7 +27,7 @@ class Handler(BaseHandler):
     _page_no = 1
     _address_postfix = 'rtlist.shtml'
     # how long the day to be crawled
-    _long = 1;
+    _long = 365;
     '''
         taskid : the same with url
     '''
@@ -46,7 +46,7 @@ class Handler(BaseHandler):
             date = date.strftime('%Y%m%d')
             seed_url = self._address_prefix + '/'+ date + '/' + str(self._page_no) + '/' +  self._address_postfix
             # each spider seed wile execute after 10 second, one by one
-            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 10, retries=10)
+            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 265, retries=10)
             logger.info("################# on_start:" +seed_url)
 
     @config(age=-1,priority=1)
@@ -65,7 +65,7 @@ class Handler(BaseHandler):
             detail_url = e.attr['href']
             if detail_url:
                 # each detail_page task wile execute after 0.01 second, one by one
-                self.crawl(detail_url,callback=self.detail_page, validate_cert=False,exetime=time.time()+ i * 0.1,retries=5)
+                self.crawl(detail_url,callback=self.detail_page, validate_cert=False,exetime=time.time()+ i * 0.3,retries=5)
                 i = i + 1
                 logger.info("################# next_page->detail_url:" + detail_url)
 
@@ -76,7 +76,7 @@ class Handler(BaseHandler):
             next_page_url = e.attr['href']
             if e.text().lstrip() == "下一页" and next_page_url:
                 # each next_page task wile execute after 0.5 second, one by one
-                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 15,retries=10)
+                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 20,retries=10)
                 logger.info("################# next_page->next_page_url:")
                 break
 
