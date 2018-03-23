@@ -46,7 +46,7 @@ class Handler(BaseHandler):
             date = date.strftime('%Y%m%d')
             seed_url = self._address_prefix + '/'+ date + '/' + str(self._page_no) + '/' +  self._address_postfix
             # each spider seed wile execute after 10 second, one by one
-            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 265, retries=10)
+            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 265, retries=5)
             logger.info("################# on_start:" +seed_url)
 
     @config(age=-1,priority=1)
@@ -56,12 +56,10 @@ class Handler(BaseHandler):
         '''
         # http://news.ifeng.com/listpage/11502/20180321/1/rtlist.shtml
         # news title
-        detail_elements = response.doc('.left li > a')
+        detail_elements = response.doc.items('.left li > a')
         i = 0;
         # step 1 :      fetch the news url  from the response and callig into detail_page function
-        for e in detail_elements.items():
-            if not detail_elements:
-                break
+        for e in detail_elements:
             detail_url = e.attr['href']
             if detail_url:
                 # each detail_page task wile execute after 0.01 second, one by one
@@ -71,12 +69,12 @@ class Handler(BaseHandler):
 
         # step 2:    calling next_page function if its has next page
         i = 0;
-        next_page_element = response.doc('span > a')
-        for e in next_page_element.items():
+        next_page_element = response.doc.items('span > a')
+        for e in next_page_element:
             next_page_url = e.attr['href']
             if e.text().lstrip() == "下一页" and next_page_url:
                 # each next_page task wile execute after 0.5 second, one by one
-                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 20,retries=10)
+                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 20,retries=5)
                 logger.info("################# next_page->next_page_url:")
                 break
 
