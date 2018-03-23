@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+# Created on 2018-03-22
+#
+#   saving spider result into files
+#
+
 from pyspider.result import ResultWorker
 import logging
 import os
