@@ -51,3 +51,45 @@ pyspider -c config.json webui
 
 - requirements.txt
 > pyspider需要用的所有包
+
+### 抓取时可以配置的参数
+- crawl(self, url, **kwargs):[详细参考链接](http://pyspider.readthedocs.org/en/latest/apis/self.crawl/)
+```
+kwargs可以进行如下配置
+
+available params:
+          url
+          callback
+
+          method
+          params
+          data
+          files
+          headers
+          timeout
+          allow_redirects
+          cookies
+          proxy
+          etag
+          last_modified
+          auto_recrawl
+
+          fetch_type
+          js_run_at
+          js_script
+          js_viewport_width
+          js_viewport_height
+          load_images
+
+          priority
+          retries
+          exetime
+          age
+          itag
+          cancel
+
+          save
+          taskid
+
+          full documents: http://pyspider.readthedocs.org/en/latest/apis/self.crawl/
+```
