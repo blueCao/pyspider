@@ -19,11 +19,11 @@ logger = getLogger("news.ifeng.com")
 class Handler(BaseHandler):
     crawl_config = {
         "user_agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36",
-        "timeout": 120,
-        "connect_timeout": 60,
-        "retries": 5,
-        "fetch_type": 'js',
-        "auto_recrawl": True,
+        "timeout": 20,
+        "connect_timeout": 10,
+        "retries": 3,
+        "fetch_type": 'None',
+        "auto_recrawl": False,
     }
 
     '''
@@ -43,7 +43,7 @@ class Handler(BaseHandler):
     def get_taskid(self, task):
         return task['url']
 
-    @config(priority=0)
+    @config(priority=3)
     def on_start(self):
         '''
         seeds .
@@ -58,10 +58,10 @@ class Handler(BaseHandler):
             date = date.strftime('%Y%m%d')
             seed_url = self._address_prefix + '/'+ date + '/' + str(self._page_no) + '/' +  self._address_postfix
             # each spider seed wile execute after 10 mintues, one by one
-            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 600, retries=3,headers=header)
+            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 600, retries=10,headers=header)
             logger.info("################# on_start:" +seed_url)
 
-    @config(age=-1,priority=1)
+    @config(age=-1,priority=2)
     def next_page(self, response, task):
         ''' 1.fetch the news url  from the response and callig into detail_page function
             2.calling next_page function if its has next page
@@ -90,11 +90,11 @@ class Handler(BaseHandler):
             next_page_url = e.attr['href']
             if e.text().lstrip() == "下一页" and next_page_url:
                 # each next_page task wile execute after 0.5 second, one by one
-                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 50,retries=3,headers=header)
+                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 50,retries=10,headers=header)
                 logger.info("################# next_page->next_page_url:")
                 break
 
-    @config(priority=2,age=-1)
+    @config(priority=1,age=-1)
     def detail_page(self, response, task):
         '''
             fetching url, title, contemt, date
