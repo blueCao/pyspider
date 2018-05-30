@@ -12,11 +12,18 @@ from log.logger import *
 import time
 from core.textrank import textrank
 from core.simhash import simhash
+from header_switch import HeadersSelector
 
 logger = getLogger("news.ifeng.com")
 
 class Handler(BaseHandler):
     crawl_config = {
+        "user_agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36",
+        "timeout": 120,
+        "connect_timeout": 60,
+        "retries": 5,
+        "fetch_type": 'js',
+        "auto_recrawl": True,
     }
 
     '''
@@ -43,12 +50,15 @@ class Handler(BaseHandler):
         fetching 365 days news
         will calliing the next_page function
         '''
+        # get a new header
+        header_slt = HeadersSelector()
+        header = header_slt.select_header()
         for i in range(self._long):
             date = datetime.today() + timedelta(-i)
             date = date.strftime('%Y%m%d')
             seed_url = self._address_prefix + '/'+ date + '/' + str(self._page_no) + '/' +  self._address_postfix
             # each spider seed wile execute after 10 mintues, one by one
-            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 600, retries=3)
+            self.crawl(seed_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 600, retries=3,headers=header)
             logger.info("################# on_start:" +seed_url)
 
     @config(age=-1,priority=1)
@@ -56,6 +66,10 @@ class Handler(BaseHandler):
         ''' 1.fetch the news url  from the response and callig into detail_page function
             2.calling next_page function if its has next page
         '''
+        # get a new header
+        header_slt = HeadersSelector()
+        header = header_slt.select_header()
+
         # http://news.ifeng.com/listpage/11502/20180321/1/rtlist.shtml
         # news title
         detail_elements = response.doc.items('.left li > a')
@@ -65,18 +79,18 @@ class Handler(BaseHandler):
             detail_url = e.attr['href']
             if detail_url:
                 # each detail_page task wile execute after 0.5 second, one by one
-                self.crawl(detail_url,callback=self.detail_page, validate_cert=False,exetime=time.time()+ i * 0.5,retries=3)
+                self.crawl(detail_url,callback=self.detail_page, validate_cert=False,exetime=time.time()+ i * 0.7,retries=3,headers=header)
                 i = i + 1
                 logger.info("################# next_page->detail_url:" + detail_url)
 
         # step 2:    calling next_page function if its has next page
-        i = 0;
+        i = 1;
         next_page_element = response.doc.items('span > a')
         for e in next_page_element:
             next_page_url = e.attr['href']
             if e.text().lstrip() == "下一页" and next_page_url:
                 # each next_page task wile execute after 0.5 second, one by one
-                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 50,retries=3)
+                self.crawl(next_page_url,callback=self.next_page, validate_cert=False,exetime=time.time()+ i * 50,retries=3,headers=header)
                 logger.info("################# next_page->next_page_url:")
                 break
 
