@@ -9,5 +9,6 @@
   },
   "result_worker": {
     "result_cls": "mongodb_result_worker.MyResultWorker"
-  }
+  },
+  "queue-maxsize":0
 }
