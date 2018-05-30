@@ -33,6 +33,7 @@ class MyResultWorker(ResultWorker):
         assert result["textrank"]
         assert result["simhash"]
 
-        # save into mongodb
-        mongo.insertDoc(result,cli,database_name,collection_name)
-        logger.info("project=%s,taskid=%s,url=%s,result=%s",task['project'],task['taskid'],task['url'],result["title"])
+        # save into mongodb if not duplicated
+        if not mongo.getCollection(cli,database_name,collection_name).find_one("{docno:"+result["docno"]+"}"):
+            mongo.insertDoc(result,cli,database_name,collection_name)
+            logger.info("project=%s,taskid=%s,url=%s,result=%s",task['project'],task['taskid'],task['url'],result["title"])
