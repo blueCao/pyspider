@@ -28,7 +28,6 @@ class MyResultWorker(ResultWorker):
         assert result['content']
         assert result['date']
         assert result['docno']
-        assert result['dir_date'],mongo
         assert result["content"]
         assert result["textrank"]
         assert result["simhash"]
