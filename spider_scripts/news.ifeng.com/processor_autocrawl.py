@@ -79,7 +79,7 @@ class Handler(BaseHandler):
             detail_url = e.attr['href']
             if detail_url:
                 # each detail_page task wile execute after 0.5 second, one by one
-                self.crawl(detail_url,callback=self.detail_page, validate_cert=False,exetime=time.time()+ i * 0.7,retries=3,headers=header)
+                self.crawl(detail_url,callback=self.detail_page, validate_cert=False,exetime=time.time()+ i * 1,retries=3,headers=header)
                 i = i + 1
                 logger.info("################# next_page->detail_url:" + detail_url)
 
@@ -112,7 +112,7 @@ class Handler(BaseHandler):
             "date": response.doc('[itemprop="datePublished"]').text().lstrip(),
             "title": response.doc('[itemprop="headline"]').text(),
             "content":content,
-            "dir_date":dir_date,
+            "source":"凤凰",
         }
         return self.raw2result(raw)
 
