@@ -93,6 +93,7 @@ class Handler(BaseHandler):
             "date": date,
             "title": self._title,
             "content":content,
+            "source":"微博热搜"
         }
         return self.raw2result(raw)
 
